@@ -2,13 +2,14 @@ using System;
 
 namespace ApplianceCenter
 {
+    //Base Class
     public abstract class HomeAppliance : IMaintainable
     {
         public string SerialNumber { get; set; }
         public string Model { get; set; }
         public double BaseRepairPrice { get; set; }
         public bool IsRepaired { get; protected set; }
-
+          //Constructor
         public HomeAppliance(string serialNumber, string model, double baseRepairPrice)
         {
             SerialNumber = serialNumber;
