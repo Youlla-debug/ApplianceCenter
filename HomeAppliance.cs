@@ -83,3 +83,44 @@ namespace ApplianceCenter
             return BaseRepairPrice + (CapacityHorsePower * 30.0);
         }
     }
+public abstract partial class HomeAppliance : IMaintainable
+    {
+        // Private fields
+        private string serialNumber;
+        private string model;
+        private double baseRepairPrice;
+        private bool isRepaired;
+
+        public HomeAppliance(string serialNumber, string model, double baseRepairPrice)
+        {
+            SerialNumber = serialNumber;
+            Model = model;
+            BaseRepairPrice = baseRepairPrice;
+            IsRepaired = false;
+        }
+
+        // Public properties
+        public string SerialNumber
+        {
+            get { return serialNumber; }
+            private set { serialNumber = value; }
+        }
+
+        public string Model
+        {
+            get { return model; }
+            set { model = value; }
+        }
+
+        public double BaseRepairPrice
+        {
+            get { return baseRepairPrice; }
+            set { baseRepairPrice = value; }
+        }
+
+        public bool IsRepaired
+        {
+            get { return isRepaired; }
+            protected set { isRepaired = value; }
+        }
+    }
