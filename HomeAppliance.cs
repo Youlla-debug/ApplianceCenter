@@ -125,3 +125,62 @@ public abstract partial class HomeAppliance : IMaintainable
             protected set { isRepaired = value; }
         }
     }
+// Status delegate
+    public delegate void StatusDelegate(string message);
+
+    // Status enum
+    public enum DeviceStatus
+    {
+        Received,
+        UnderMaintenance,
+        Repaired,
+        Delivered
+    }
+// Device class
+    public class Device : IMaintainable
+    {
+        // Devices list
+        public static List<Device> AllDevices = new List<Device>();
+
+        public HomeAppliance ApplianceInfo { get; set; }
+        public DeviceStatus CurrentStatus { get; set; }
+        public DateTime ReceivedDate { get; set; }
+
+        // Status event
+        public event StatusDelegate StatusChanged;
+
+        public string DeviceName => ApplianceInfo.Model;
+        public string SerialNumber => ApplianceInfo.SerialNumber;
+        public double RepairCost => ApplianceInfo.CalculateRepairCost();
+        public bool IsRepaired => ApplianceInfo.IsRepaired;
+
+        public Device(HomeAppliance appliance, DeviceStatus status, DateTime receivedDate)
+        {
+            ApplianceInfo = appliance;
+            CurrentStatus = status;
+            ReceivedDate = receivedDate;
+            AllDevices.Add(this);
+        }
+
+        // Trigger event
+        public void ChangeStatus(DeviceStatus newStatus)
+        {
+            CurrentStatus = newStatus;
+            if (StatusChanged != null)
+            {
+                StatusChanged("Device " + SerialNumber + " status changed to: " + CurrentStatus);
+            }
+        }
+
+        public void StartMaintenance()
+        {
+            ChangeStatus(DeviceStatus.UnderMaintenance);
+            ApplianceInfo.StartMaintenance();
+        }
+
+        public void CompleteMaintenance()
+        {
+            ApplianceInfo.CompleteMaintenance();
+            ChangeStatus(DeviceStatus.Repaired);
+        }
+    }
