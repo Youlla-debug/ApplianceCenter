@@ -28,7 +28,8 @@ namespace ApplianceCenter
             IsRepaired = true;
             Console.WriteLine("Maintenance completed for model: " + Model);
         }
-    }// Refrigerator class
+    }
+    // Refrigerator class
     public class Refrigerator : HomeAppliance
     {
         public bool NeedsGasRefill { get; set; }
