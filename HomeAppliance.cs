@@ -184,3 +184,97 @@ public abstract partial class HomeAppliance : IMaintainable
             ChangeStatus(DeviceStatus.Repaired);
         }
     }
+    // Validation class
+    public static class ApplianceValidator
+    {
+        public static bool ValidateSerialNumber(string serialNumber)
+        {
+            return !string.IsNullOrEmpty(serialNumber) && serialNumber.Length >= 5;
+        }
+    }
+
+    // Statistics class
+    public static class WorkshopStatistics
+    {
+        public static int DevicesUnderMaintenance
+        {
+            get { return Device.AllDevices.Count(d => d.CurrentStatus == DeviceStatus.UnderMaintenance); }
+        }
+
+        public static int RepairedDevicesCount
+        {
+            get { return Device.AllDevices.Count(d => d.CurrentStatus == DeviceStatus.Repaired || d.IsRepaired); }
+        }
+
+        public static double TotalRepairCost
+        {
+            get
+            {
+                return Device.AllDevices.Sum(d => d.RepairCost);
+            }
+        }
+    }
+
+ 
+
+    class Program
+    {
+        // Event handler
+        static void ShowMessage(string message)
+        {
+            Console.WriteLine(message);
+        }
+
+        static void Main(string[] args)
+        {
+            // Appliances list
+            List<HomeAppliance> appliances = new List<HomeAppliance>
+            {
+                new Refrigerator("REF-101", "Samsung", 50.0, true),
+                new WashingMachine("WM-202", "LG", 60.0, false),
+                new AirConditioner("AC-303", "Gree", 80.0, 2)
+            };
+
+            List<Device> devices = new List<Device>();
+
+            foreach (HomeAppliance appliance in appliances)
+            {
+                Device device = new Device(
+                    appliance,
+                    DeviceStatus.Received,
+                    new DateTime(2026, 11, 5));
+
+                // Event subscription
+                device.StatusChanged += ShowMessage;
+
+                devices.Add(device);
+            }
+
+            double totalCost = 0;
+
+            // Maintenance loop
+            foreach (Device device in devices)
+            {
+                Console.WriteLine("\nDevice: " + device.DeviceName);
+                Console.WriteLine("Serial Number: " + device.SerialNumber);
+
+                device.StartMaintenance();
+
+                double cost = device.RepairCost;
+                totalCost += cost;
+
+                Console.WriteLine("Repair Cost: " + cost);
+
+                device.CompleteMaintenance();
+            }
+
+// Print statistics
+            Console.WriteLine("\n=== WORKSHOP STATISTICS ===");
+            Console.WriteLine("Devices Under Maintenance: " + WorkshopStatistics.DevicesUnderMaintenance);
+            Console.WriteLine("Repaired Devices: " + WorkshopStatistics.RepairedDevicesCount);
+            Console.WriteLine("Total Repair Cost: " + WorkshopStatistics.TotalRepairCost);
+
+            Console.ReadKey();
+        }
+    }
+}
